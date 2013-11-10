@@ -2,10 +2,6 @@
 Morph!
 ======
 
-.. warning::
-
-  2013/11/08: under active development - come back soon!
-
 Morph provides the following functions to help identify object types:
 
 ============================  =================================================
