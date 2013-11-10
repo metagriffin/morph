@@ -1,0 +1,5 @@
+* make sure the is*() functions work with the `collections` module
+  objects as expected.
+
+* it would be great if the README pulled the documentation from
+  the code...
