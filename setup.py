@@ -61,7 +61,6 @@ setup(
   install_requires      = dependencies,
   tests_require         = test_dependencies,
   test_suite            = 'morph',
-  entry_points          = entrypoints,
   license               = 'MIT (http://opensource.org/licenses/MIT)',
   )
 
