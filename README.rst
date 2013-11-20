@@ -2,6 +2,7 @@
 Morph!
 ======
 
+
 Morph provides the following functions to help identify object types:
 
 ============================  =================================================
@@ -14,7 +15,6 @@ Name                          Functionality
                               must have at least the following methods:
                               `keys()`, `values()`, and `items()`.
 ============================  =================================================
-
 
 Morph provides the following functions to help morph objects:
 
@@ -99,8 +99,28 @@ Picking and Omitting
 ====================
 
 Morph's `pick` and `omit` functions allow you to extract a set of keys
-(or properties) from a dict-like object (or plain object). For
-example:
+(or properties) from a dict-like object (or plain object). These
+functions will aggressively return a valid dict, regardless of the
+supplied value -- i.e. if ``None`` is given as a source, an empty dict
+is returned. Furthermore, the following optional keyword parameters
+are accepted:
+
+* **dict**:
+
+  Specifies the class type that should be returned, which defaults
+  to the standard python ``dict`` type.
+
+* **prefix**:
+
+  For `pick`, specifies that only keys that start with the specified
+  string will be returned (and also filtered for the specified keys),
+  with the prefix stripped from the keys. If no keys are specified,
+  this will simply return only the keys with the specified prefix.
+
+  For `omit`, specifies that keys that start with the specified value
+  should be stripped from the returned dict.
+
+Examples:
 
 .. code-block:: python
 
@@ -120,6 +140,11 @@ example:
 
   morph.omit(d, prefix='zig.')
   # ==> {'foo': 'bar'}
+
+  class mydict(dict): pass
+  morph.pick(dict(foo='bar', zig='zag'), 'foo', dict=mydict)
+  # ==> mydict({'foo': 'bar'})
+
 
 With some limitations, this also works on object properties. For
 example:
