@@ -39,8 +39,9 @@ else:
 #------------------------------------------------------------------------------
 def isseq(obj):
   '''
-  Returns True if `obj` is a sequence-like object; i.e. a tuple, list,
-  subclass thereof, or having an interface that supports iteration.
+  Returns True if `obj` is a sequence-like object (but not a string or
+  dict); i.e. a tuple, list, subclass thereof, or having an interface
+  that supports iteration.
   '''
   return \
     not isstr(obj) \
@@ -51,9 +52,9 @@ def isseq(obj):
 #------------------------------------------------------------------------------
 def isdict(obj):
   '''
-  Returns True if `obj` is a dict-like object; i.e. a dict, subclass
-  thereof, or having an interface that supports key, value, and item
-  iteration.
+  Returns True if `obj` is a dict-like object (but not a string or
+  list); i.e. a dict, subclass thereof, or having an interface that
+  supports key, value, and item iteration.
   '''
   return \
     not isstr(obj) \
