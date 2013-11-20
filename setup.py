@@ -42,10 +42,7 @@ dependencies = [
   ]
 
 classifiers = [
-  'Development Status :: 1 - Planning',
-  # 'Development Status :: 2 - Pre-Alpha',
-  # 'Development Status :: 3 - Alpha',
-  # 'Development Status :: 4 - Beta',
+  'Development Status :: 4 - Beta',
   # 'Development Status :: 5 - Production/Stable',
   'Intended Audience :: Developers',
   'Operating System :: OS Independent',
@@ -65,7 +62,7 @@ setup(
   author                = 'metagriffin',
   author_email          = 'mg.pypi@uberdev.org',
   url                   = 'http://github.com/metagriffin/morph',
-  keywords              = 'morph string list tuple dict flatten unflatten tolist tobool',
+  keywords              = 'morph string list tuple dict flatten unflatten tolist tobool pick omit',
   packages              = find_packages(),
   platforms             = ['any'],
   include_package_data  = True,
