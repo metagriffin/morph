@@ -67,11 +67,18 @@ class TestMorph(unittest.TestCase):
   def test_tobool(self):
     self.assertTrue(morph.tobool('true'))
     self.assertTrue(morph.tobool('TRUE'))
+    self.assertTrue(morph.tobool('yes'))
+    self.assertTrue(morph.tobool('yEs'))
+    self.assertTrue(morph.tobool('1'))
     self.assertFalse(morph.tobool('false'))
     self.assertFalse(morph.tobool('FALSE'))
     self.assertFalse(morph.tobool('nada'))
+    self.assertFalse(morph.tobool('No'))
+    self.assertFalse(morph.tobool('no'))
+    self.assertFalse(morph.tobool('0'))
+    self.assertIsNone(morph.tobool('nada', default=None))
     with self.assertRaises(ValueError) as cm:
-      morph.tobool('nada', default=None)
+      morph.tobool('nada', default=ValueError)
     self.assertTrue(morph.tobool(True))
     self.assertFalse(morph.tobool(False))
 
@@ -102,7 +109,7 @@ class TestMorph(unittest.TestCase):
        'a.b[1][1].x': 4,
        'a.b[1][1].y': 5,
        'a.b[1][2]':   6,
-       })
+      })
 
   #----------------------------------------------------------------------------
   def test_unflatten_fail(self):

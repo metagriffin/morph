@@ -23,10 +23,10 @@ Name                          Functionality
 ============================  =================================================
 ``morph.tobool(obj)``         Converts `obj` to a bool; if string-like, it
                               is matched against a list of "truthy" or "falsy"
-                              strings; if bool-like, returns itself; then,
-                              if the `default` parameter is not None (which
-                              defaults to ``False``), returns that; otherwise
-                              throws a ValueError exception.
+                              strings; if bool-like, returns itself; then, if
+                              the `default` parameter is not ``ValueError``
+                              (which defaults to ``False``), returns that;
+                              otherwise throws a ValueError exception.
 ``morph.tolist(obj)``         Converts `obj` to a list; if string-like, it
                               splits it according to Unix shell semantics;
                               if seq-like, returns itself, and otherwise

@@ -66,19 +66,23 @@ def isdict(obj):
 #------------------------------------------------------------------------------
 def tobool(obj, default=False):
   '''
-  TODO: add docs
+  Returns a bool representation of `obj`: if `obj` is a bool, it is
+  returned as-is. If it is a string, it is checked for "truthy" or
+  "falsy" values, and that is returned. Otherwise, `default` is
+  returned (which defaults to ``False``) unless `default` is set to
+  ``ValueError``, in which case an exception is raised.
   '''
+  if isinstance(obj, bool):
+    return obj
   if isstr(obj):
     lobj = obj.lower()
     if lobj in truthy:
       return True
     if lobj in falsy:
       return False
-  if isinstance(obj, bool):
-    return obj
-  if default is not None:
-    return default
-  raise ValueError('invalid literal for tobool(): %r' % (obj,))
+  if default is ValueError:
+    raise ValueError('invalid literal for tobool(): %r' % (obj,))
+  return default
 
 #------------------------------------------------------------------------------
 def tolist(obj, flat=True):
