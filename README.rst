@@ -28,9 +28,12 @@ Name                          Functionality
                               (which defaults to ``False``), returns that;
                               otherwise throws a ValueError exception.
 ``morph.tolist(obj)``         Converts `obj` to a list; if string-like, it
-                              splits it according to Unix shell semantics;
-                              if seq-like, returns itself, and otherwise
-                              returns a list with itself as single object.
+                              splits it according to Unix shell semantics (if
+                              keyword `split` is truthy, the default); if
+                              sequence-like, returns itself converted to a list
+                              (optionally flattened if keyword `flat` is
+                              truthy, the default), and otherwise returns a
+                              list with itself as single object.
 ``morph.pick(...)``           Extracts a subset of key/value pairs from a
                               dict-like object where the key is a specific
                               value or has a specific prefix.
