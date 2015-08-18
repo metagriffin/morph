@@ -19,8 +19,12 @@
 # along with this program. If not, see http://www.gnu.org/licenses/.
 #------------------------------------------------------------------------------
 
-import sys, shlex
-PY3 = sys.version_info[0] >= 3
+import sys
+import shlex
+
+#------------------------------------------------------------------------------
+
+PY3    = sys.version_info[0] >= 3
 
 truthy = frozenset(('t', 'true', 'y', 'yes', 'on', '1'))
 falsy  = frozenset(('f', 'false', 'n', 'no', 'off', '0'))
@@ -165,8 +169,8 @@ def unflatten(obj):
     ret[pfx] = _relunflatten(pfx, values)
   return ret
 def _relunflatten(pfx, values):
-  if len(values) == 1 and values.keys()[0] == '':
-    return values.values()[0]
+  if len(values) == 1 and list(values.keys())[0] == '':
+    return list(values.values())[0]
   typ = set([k[0] for k in values.keys()])
   if len(typ) != 1:
     raise ValueError(
