@@ -35,11 +35,10 @@ def read(*parts, **kw):
 test_dependencies = [
   'nose                 >= 1.3.0',
   'coverage             >= 3.5.3',
-  ]
+]
 
 dependencies = [
-  'distribute           >= 0.6.24',
-  ]
+]
 
 classifiers = [
   'Development Status :: 4 - Beta',
@@ -51,7 +50,7 @@ classifiers = [
   'Topic :: Software Development :: Libraries :: Python Modules',
   'Topic :: Utilities',
   'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-  ]
+]
 
 setup(
   name                  = 'morph',
@@ -71,7 +70,7 @@ setup(
   tests_require         = test_dependencies,
   test_suite            = 'morph',
   license               = 'GPLv3+',
-  )
+)
 
 #------------------------------------------------------------------------------
 # end of $Id$
