@@ -97,6 +97,8 @@ def tolist(obj, flat=True, split=True):
   list is returned optionally flattened if `flat` is truthy (see
   :func:`flatten`).
   '''
+  # todo: it would be "pretty awesome" if this could auto-detect
+  #       comma-separation rather than space-separation
   if not obj:
     return []
   if isseq(obj):
