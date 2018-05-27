@@ -26,6 +26,8 @@ import morph
 #------------------------------------------------------------------------------
 class TestMorph(unittest.TestCase):
 
+  maxDiff = None
+
   #----------------------------------------------------------------------------
   def test_isstr(self):
     self.assertTrue(morph.isstr(''))
@@ -213,6 +215,59 @@ class TestMorph(unittest.TestCase):
       {'foo': 'bar'})
     self.assertEqual(
       morph.omit(src), {'foo': 'bar', 'zig1': 'zog', 'zig2': 'zug'})
+
+  #----------------------------------------------------------------------------
+  def test_xform_seq(self):
+    stack = []
+    def double(value, **kws):
+      stack.append((value, kws))
+      return value * 2
+    src = [4, 'foo', -2.25]
+    self.assertEqual(
+      morph.xform(src, double),
+      [8, 'foofoo', -4.5])
+    self.assertEqual(stack, [
+      (4, dict(index=0, seq=src, root=src)),
+      ('foo', dict(index=1, seq=src, root=src)),
+      (-2.25, dict(index=2, seq=src, root=src)),
+    ])
+
+  #----------------------------------------------------------------------------
+  def test_xform_dict(self):
+    stack = []
+    def double(value, **kws):
+      stack.append((value, kws))
+      return value * 2
+    src = {4: 'four', 'foo': 'bar', 'float': -2.25}
+    self.assertEqual(
+      morph.xform(src, double),
+      {8: 'fourfour', 'foofoo': 'barbar', 'floatfloat': -4.5})
+    self.assertEqual(sorted(stack), sorted([
+      (4, dict(item_value='four', dict=src, root=src)),
+      ('four', dict(item_key=4, dict=src, root=src)),
+      ('foo', dict(item_value='bar', dict=src, root=src)),
+      ('bar', dict(item_key='foo', dict=src, root=src)),
+      ('float', dict(item_value=-2.25, dict=src, root=src)),
+      (-2.25, dict(item_key='float', dict=src, root=src)),
+    ]))
+
+  #----------------------------------------------------------------------------
+  def test_xform_combined(self):
+    stack = []
+    def double(value, **kws):
+      stack.append((value, kws))
+      return value * 2
+    src = {'key': [8, {'k2': -2}]}
+    self.assertEqual(
+      morph.xform(src, double),
+      {'keykey': [16, {'k2k2': -4}]})
+    self.assertEqual(stack, [
+      (8, dict(index=0, seq=[8, {'k2': -2}], root=src)),
+      (-2, dict(item_key='k2', dict={'k2': -2}, root=src)),
+      ('k2', dict(item_value=-2, dict={'k2': -2}, root=src)),
+      ('key', dict(item_value=[8, {'k2': -2}], dict=src, root=src)),
+    ])
+
 
 #------------------------------------------------------------------------------
 # end of $Id$
