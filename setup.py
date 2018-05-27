@@ -61,7 +61,7 @@ setup(
   author                = 'metagriffin',
   author_email          = 'mg.pypi@uberdev.org',
   url                   = 'http://github.com/metagriffin/morph',
-  keywords              = 'morph string list tuple dict flatten unflatten tolist tobool pick omit',
+  keywords              = 'morph transform string list tuple dict flatten unflatten tolist tobool pick omit',
   packages              = find_packages(),
   platforms             = ['any'],
   include_package_data  = True,

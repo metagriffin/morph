@@ -9,7 +9,7 @@ Morph provides the following functions to help identify object types:
 Name                          Functionality
 ============================  =================================================
 ``morph.isstr(obj)``          Is `obj` a string?
-``morph.isseq(obj)``          Is `obj` an sequence-like (i.e. iterable) type
+``morph.isseq(obj)``          Is `obj` a sequence-like (i.e. iterable) type
                               (but not a string or dict)?
 ``morph.isdict(obj)``         Is `obj` a dict-like type? This means that it
                               must have at least the following methods:
@@ -42,6 +42,8 @@ Name                          Functionality
                               to a one-dimensional list or dict.
 ``morph.unflatten(obj)``      Reverses the effects of `flatten` (note that
                               lists cannot be unflattened).
+``morph.xform(obj, func)``    Recursively transforms sequences & dicts in
+                              `object`.
 ============================  =================================================
 
 
@@ -53,7 +55,7 @@ When flattening a sequence-like object (i.e. list or tuple),
 single dimension, but only for elements of each descended list that
 are list-like. For example:
 
-.. code-block:: python
+.. code:: python
 
   [1, [2, [3, 'abc', 'def', {'foo': ['zig', ['zag', 'zog']]}], 4]]
 
@@ -64,7 +66,7 @@ are list-like. For example:
 When flattening a dict-like object, it collapses list- and dict-
 subkeys into indexed and dotted top-level keys. For example:
 
-.. code-block:: python
+.. code:: python
 
   {
     'a': {
@@ -123,9 +125,15 @@ are accepted:
   For `omit`, specifies that keys that start with the specified value
   should be stripped from the returned dict.
 
+* **tree**:
+
+  If specified and truthy, then the keys specified to either `pick` or
+  `omit` are evaluated as a multi-dimensional item addresses like
+  those produced by `morph.flatten`.
+
 Examples:
 
-.. code-block:: python
+.. code:: python
 
   d = {'foo': 'bar', 'zig.a': 'b', 'zig.c': 'd'}
 
@@ -152,7 +160,7 @@ Examples:
 With some limitations, this also works on object properties. For
 example:
 
-.. code-block:: python
+.. code:: python
 
   class X():
     def __init__(self):
@@ -180,3 +188,25 @@ example:
 
   morph.omit(x)
   # ==> {'foo': 'bar', 'zig1': 'zog', 'zig2': 'zug'}
+
+
+Transformation
+==============
+
+The `morph.xform` helper function can be used to recursively transform
+all the items in a list & dictionary tree -- this effectively allows
+the ease of list comprehensions to be applied to nested list/dict
+structures.
+
+Example:
+
+.. code:: python
+
+  morph.xform([2, [4, {6: 8}]], lambda val, **kws: val ** 2)
+  # ==> [4, [16, {36: 64}]]
+
+
+Note that the callback function `xformer`, passed as the second
+argument to `morph.xform`, should always support an arbitrary number
+of keyword parameters (i.e. should always end the parameter list with
+something like ``**kws``).
