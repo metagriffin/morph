@@ -210,7 +210,7 @@ def properties(obj):
       yield attr
 
 #------------------------------------------------------------------------------
-def pick(source, *keys, **kw):
+def pick(source, *keys, **kws):
   '''
   Given a `source` dict or object, returns a new dict that contains a
   subset of keys (each key is a separate positional argument) and/or
@@ -220,12 +220,28 @@ def pick(source, *keys, **kw):
   instantiate the returned object. Note that if `source` is an object
   without an `items()` iterator, then the selected keys will be
   extracted as attributes. The `prefix` keyword only works with
-  dict-like objects.
+  dict-like objects. If the `tree` keyword is specified and set to
+  truthy, each key is evaluated as a hierchical key walker spec. In
+  other words, the following are equivalent:
+
+  .. code:: python
+
+    src = dict(a=dict(b='bee', c='cee'), d='dee')
+    assert morph.pick(src, 'a.b', tree=True) == dict(a=dict(b='bee'))
+
+  Requests for keys not found in `source` are silently ignored.
+
+  :Changes:
+
+  * `tree` support added in version 0.1.3.
   '''
-  rettype = kw.pop('dict', dict)
-  prefix = kw.pop('prefix', None)
-  if kw:
-    raise ValueError('invalid pick keyword arguments: %r' % (kw.keys(),))
+  rettype = kws.pop('dict', dict)
+  prefix  = kws.pop('prefix', None)
+  tree    = kws.pop('tree', False)
+  if kws:
+    raise ValueError('invalid pick keyword arguments: %r' % (kws.keys(),))
+  if prefix is not None and tree:
+    raise ValueError('`prefix` and `tree` currently cannot be used together')
   if not source:
     return rettype()
   if prefix is not None:
@@ -245,24 +261,41 @@ def pick(source, *keys, **kw):
     if prefix is not None:
       return rettype(source)
     return rettype()
+  rkeys = keys
+  if tree:
+    rkeys = [key.split('.', 1)[0] for key in rkeys]
   try:
-    return rettype({k: v for k, v in source.items() if k in keys})
+    ret = rettype({k: v for k, v in source.items() if k in rkeys})
   except AttributeError:
-    return rettype({k: getattr(source, k) for k in keys if hasattr(source, k)})
+    ret = rettype({k: getattr(source, k) for k in rkeys if hasattr(source, k)})
+  if tree:
+    for key in keys:
+      if '.' in key:
+        key, rem = key.split('.', 1)
+        if key in ret:
+          ret[key] = pick(ret[key], rem, dict=rettype, prefix=prefix, tree=tree)
+  return ret
 
 #------------------------------------------------------------------------------
-def omit(source, *keys, **kw):
+def omit(source, *keys, **kws):
   '''
   Identical to the :func:`pick` function, but returns the complement,
   with the exception of the `prefix` parameter. In the `omit`
   scenario, it works as a wildcarded key, where all keys that have a
   ``startswith()`` function and it returns True of the `prefix` are
   excluded from the return structure.
+
+  :Changes:
+
+  * `tree` support added in version 0.1.3.
   '''
-  rettype = kw.pop('dict', dict)
-  prefix = kw.pop('prefix', None)
-  if kw:
-    raise ValueError('invalid omit keyword arguments: %r' % (kw.keys(),))
+  rettype = kws.pop('dict', dict)
+  prefix  = kws.pop('prefix', None)
+  tree    = kws.pop('tree', False)
+  if kws:
+    raise ValueError('invalid omit keyword arguments: %r' % (kws.keys(),))
+  if prefix is not None and tree:
+    raise ValueError('`prefix` and `tree` currently cannot be used together')
   if not source:
     return rettype()
   if prefix is not None:
@@ -283,18 +316,27 @@ def omit(source, *keys, **kw):
   #     return rettype(source)
   #   except TypeError:
   #     return rettype({k: v for k, v in properties(source)})
+  rkeys = keys
+  if tree:
+    rkeys = [key for key in rkeys if '.' not in key]
   try:
-    return rettype({k: v for k, v in source.items() if k not in keys})
+    ret = rettype({k: v for k, v in source.items() if k not in rkeys})
   except AttributeError:
-    pass
-  try:
-    return rettype({k: getattr(source, k)
-                    for k in iter(source)
-                    if k not in keys})
-  except TypeError:
-    return rettype({k: getattr(source, k)
-                    for k in properties(source)
-                    if k not in keys})
+    try:
+      ret = rettype({k: getattr(source, k)
+                     for k in iter(source)
+                     if k not in rkeys})
+    except TypeError:
+      ret = rettype({k: getattr(source, k)
+                     for k in properties(source)
+                     if k not in rkeys})
+  if tree:
+    for key in keys:
+      if '.' in key:
+        key, rem = key.split('.', 1)
+        if key in ret:
+          ret[key] = omit(ret[key], rem, dict=rettype, prefix=prefix, tree=tree)
+  return ret
 
 #------------------------------------------------------------------------------
 def xform(value, xformer):

@@ -190,6 +190,31 @@ class TestMorph(unittest.TestCase):
     self.assertEqual(morph.pick(src), {})
 
   #----------------------------------------------------------------------------
+  def test_pick_tree(self):
+    src = {
+      'a': 'a',
+      'b': {'x': 'b.x', 'y': 'b.y'},
+      'b.x': 'b-dot-x',
+      'c': [
+        {'x': 'c0.x', 'y': 'c0.y'},
+        {'x': 'c1.x', 'y': 'c1.y'},
+      ],
+    }
+    self.assertEqual(
+      morph.pick(src, 'a', 'b.x', tree=True),
+      {'a': 'a', 'b': {'x': 'b.x'}})
+    self.assertEqual(
+      morph.pick(src, 'a', 'b.x'),
+      {'a': 'a', 'b.x': 'b-dot-x'})
+    # TODO: add support for this...
+    # self.assertEqual(
+    #   morph.pick(src, 'c[0].x', tree=True),
+    #   {'c': [{'x': 'c0.x'}]})
+    # self.assertEqual(
+    #   morph.pick(src, 'c[].x', tree=True),
+    #   {'c': [{'x': 'c0.x'}, {'x': 'c1.x'}]})
+
+  #----------------------------------------------------------------------------
   def test_omit(self):
     class aadict(dict): pass
     d = aadict(foo='bar', zig=87, ziggy=78)
@@ -215,6 +240,32 @@ class TestMorph(unittest.TestCase):
       {'foo': 'bar'})
     self.assertEqual(
       morph.omit(src), {'foo': 'bar', 'zig1': 'zog', 'zig2': 'zug'})
+
+  #----------------------------------------------------------------------------
+  def test_omit_tree(self):
+    src = {
+      'a': 'a',
+      'b': {'x': 'b.x', 'y': 'b.y'},
+      'b.x': 'b-dot-x',
+      'c': [
+        {'x': 'c0.x', 'y': 'c0.y'},
+        {'x': 'c1.x', 'y': 'c1.y'},
+      ],
+    }
+    self.assertEqual(
+      morph.omit(src, 'a', 'b.x', 'c', tree=True),
+      {'b': {'y': 'b.y'}, 'b.x': 'b-dot-x'})
+    self.assertEqual(
+      morph.omit(src, 'a', 'b.x', 'c'),
+      {'b': {'x': 'b.x', 'y': 'b.y'}})
+
+    # src = {'a': 'a', 'b': [{'x': 'b0.x', 'y': 'b0.y'}, {'x': 'b1.x', 'y': 'b1.y'}]}
+    # self.assertEqual(
+    #   morph.omit(src, 'b[0].x'),
+    #   {'a': 'a', 'b': [{'y': 'b0.y'}, {'x': 'b1.x', 'y': 'b1.y'}]})
+    # self.assertEqual(
+    #   morph.omit(src, 'b[].x'),
+    #   {'a': 'a', 'b': [{'y': 'b0.y'}, {'y': 'b1.y'}]})
 
   #----------------------------------------------------------------------------
   def test_xform_seq(self):
