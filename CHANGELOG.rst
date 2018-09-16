@@ -6,6 +6,12 @@ ChangeLog
 v0.1.3
 ======
 
+* Added support for non-bool non-string to `tobool` via deferring to `bool()`
+
+
+v0.1.3
+======
+
 * Added `xform` helper method
 * Added hierarchical key specification (`tree`) in `pick` and `omit`
 
