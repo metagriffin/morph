@@ -83,6 +83,8 @@ class TestMorph(unittest.TestCase):
       morph.tobool('nada', default=ValueError)
     self.assertTrue(morph.tobool(True))
     self.assertFalse(morph.tobool(False))
+    self.assertTrue(morph.tobool(1))
+    self.assertFalse(morph.tobool(0))
 
   #----------------------------------------------------------------------------
   def test_tolist(self):
