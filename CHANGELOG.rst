@@ -3,7 +3,7 @@ ChangeLog
 =========
 
 
-v0.1.3
+v0.1.4
 ======
 
 * Added support for non-bool non-string to `tobool` via deferring to `bool()`
