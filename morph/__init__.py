@@ -111,56 +111,62 @@ def tolist(obj, flat=True, split=True):
   return [obj]
 
 #------------------------------------------------------------------------------
-def flatten(obj):
+def flatten(obj, separator='.'):
   '''
   TODO: add docs
   '''
+  if len(separator) != 1:
+    raise ValueError('Separator must be a single character')
+
   if isseq(obj):
     ret = []
     for item in obj:
       if isseq(item):
-        ret.extend(flatten(item))
+        ret.extend(flatten(item, separator))
       else:
         ret.append(item)
     return ret
   if isdict(obj):
     ret = dict()
     for key, value in obj.items():
-      for skey, sval in _relflatten(value):
+      for skey, sval in _relflatten(value, separator):
         ret[key + skey] = sval
     return ret
   raise ValueError(
     'only list- and dict-like objects can be flattened, not %r' % (obj,))
-def _relflatten(obj):
+def _relflatten(obj, separator):
   if isseq(obj):
     for idx, subval in enumerate(obj):
-      for skey, sval in _relflatten(subval):
+      for skey, sval in _relflatten(subval, separator):
         yield '[' + str(idx) + ']' + skey, sval
     return
   if isdict(obj):
     for skey, sval in flatten(obj).items():
-      yield '.' + skey, sval
+      yield separator + skey, sval
     return
   yield '', obj
 
 #------------------------------------------------------------------------------
-def unflatten(obj):
+def unflatten(obj, separator='.'):
   '''
   TODO: add docs
   '''
+  if len(separator) != 1:
+    raise ValueError('Separator must be a single character')
+
   if not isdict(obj):
     raise ValueError(
       'only dict-like objects can be unflattened, not %r' % (obj,))
   ret = dict()
   sub = dict()
   for key, value in obj.items():
-    if '.' not in key and '[' not in key:
+    if separator not in key and '[' not in key:
       ret[key] = value
       continue
-    if '.' in key and '[' in key:
-      idx = min(key.find('.'), key.find('['))
-    elif '.' in key:
-      idx = key.find('.')
+    if separator in key and '[' in key:
+      idx = min(key.find(separator), key.find('['))
+    elif separator in key:
+      idx = key.find(separator)
     else:
       idx = key.find('[')
     prefix = key[:idx]
@@ -171,9 +177,9 @@ def unflatten(obj):
     if pfx in ret:
       raise ValueError(
         'conflicting scalar vs. structure for prefix: %s' % (pfx,))
-    ret[pfx] = _relunflatten(pfx, values)
+    ret[pfx] = _relunflatten(pfx, values, separator)
   return ret
-def _relunflatten(pfx, values):
+def _relunflatten(pfx, values, separator):
   if len(values) == 1 and list(values.keys())[0] == '':
     return list(values.values())[0]
   typ = set([k[0] for k in values.keys()])
@@ -181,8 +187,8 @@ def _relunflatten(pfx, values):
     raise ValueError(
       'conflicting structures (dict vs. list) for prefix: %s' % (pfx,))
   typ = list(typ)[0]
-  if typ == '.':
-    return unflatten({k[1:]: v for k, v in values.items()})
+  if typ == separator:
+    return unflatten({k[1:]: v for k, v in values.items()}, separator)
   tmp = dict()
   for skey, sval in values.items():
     if skey[0] != '[':
@@ -203,7 +209,7 @@ def _relunflatten(pfx, values):
     if pos not in tmp:
       tmp[pos] = dict()
     tmp[pos][skey[idx + 1:]] = sval
-  return [_relunflatten(pfx + '[' + str(pos) + ']', tmp[pos])
+  return [_relunflatten(pfx + '[' + str(pos) + ']', tmp[pos], separator)
           for pos in sorted(tmp.keys())]
 
 #------------------------------------------------------------------------------
