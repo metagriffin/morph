@@ -141,7 +141,7 @@ def _relflatten(obj, separator):
         yield '[' + str(idx) + ']' + skey, sval
     return
   if isdict(obj):
-    for skey, sval in flatten(obj).items():
+    for skey, sval in flatten(obj, separator).items():
       yield separator + skey, sval
     return
   yield '', obj
