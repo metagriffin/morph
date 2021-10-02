@@ -80,6 +80,10 @@ def isscalar(obj):
   * string values (i.e. `str`, and `unicode`, as available)
 
   Otherwise returns ``False``.
+
+  :ChangeLog:
+
+  * Added in version 0.1.5.
   '''
   return \
     obj is None \
@@ -93,6 +97,10 @@ def isstruct(obj, primitives=False):
   i.e. a list- or dict-type. If `primitives` is truthy, also
   recursively checks that all sub-items of `obj` are primitives.
   Otherwise returns ``False``.
+
+  :ChangeLog:
+
+  * Added in version 0.1.5.
   '''
   if isdict(obj):
     if primitives:
@@ -114,6 +122,10 @@ def isprimitive(obj, recursive=True):
   Returns ``True`` if `obj` is a primitive scalar (see `isscalar`)
   or recursive primitive structure (see `isstruct`). Otherwise
   returns ``False``.
+
+  :ChangeLog:
+
+  * Added in version 0.1.5.
   '''
   if isscalar(obj):
     return True
