@@ -286,7 +286,7 @@ def pick(source, *keys, **kws):
 
   Requests for keys not found in `source` are silently ignored.
 
-  :Changes:
+  :ChangeLog:
 
   * `tree` support added in version 0.1.3.
   '''
@@ -340,7 +340,7 @@ def omit(source, *keys, **kws):
   ``startswith()`` function and it returns True of the `prefix` are
   excluded from the return structure.
 
-  :Changes:
+  :ChangeLog:
 
   * `tree` support added in version 0.1.3.
   '''
@@ -420,8 +420,36 @@ def xform(value, xformer):
   * `dict`: the current dictionary being transformed.
   * `root`: a reference to the original `value` passed to `xform`.
 
-  Added in version 0.1.3.
+  Examples:
+
+  A no-op copy (creates a deep copy of the structure)::
+
+    copy = morph.xform(value, lambda val, **kws: val)
+
+  Convert everything to a string::
+
+    copy = morph.xform(value, lambda val, **kws: str(val))
+
+  Double the second value in any sequence::
+
+    def conditional_double(value, **kws):
+      if 'seq' in kws and kws.get('index') == 1:
+        return value * 2
+      return value
+    copy = morph.xform(value, conditional_double)
+
+  :ChangeLog:
+
+  * Added in version 0.1.3.
   '''
+
+  # TODO: seq and dict values need to be passed to `xformer` as an
+  #       additional pass...
+  #       ==> note: this *must* be optional and by default **OFF**...
+
+  # TODO: `xformer` should be allowed to raise StopIteration if the
+  #       presented item shoud be removed from a dict/list...
+
   def _xform(curval, **kws):
     if isseq(curval):
       return [
