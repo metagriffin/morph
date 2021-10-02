@@ -21,6 +21,7 @@
 
 import sys
 import shlex
+import types
 
 #------------------------------------------------------------------------------
 
@@ -66,6 +67,57 @@ def isdict(obj):
           or ( callable(getattr(obj, 'keys', None)) \
                and callable(getattr(obj, 'values', None)) \
                and callable(getattr(obj, 'items', None)) ))
+
+#------------------------------------------------------------------------------
+def isscalar(obj):
+  '''
+  Returns ``True`` if `obj` is a scalar value, which includes:
+
+  * null values (i.e. ``None``)
+  * boolean values (i.e. ``True`` and ``False``)
+  * numeric values (i.e. `int` and `float`)
+  * low-level bytes (i.e. `bytes`)
+  * string values (i.e. `str`, and `unicode`, as available)
+
+  Otherwise returns ``False``.
+  '''
+  return \
+    obj is None \
+    or isinstance(obj, ( bool, int, float, bytes )) \
+    or isstr(obj)
+
+#------------------------------------------------------------------------------
+def isstruct(obj, primitives=False):
+  '''
+  Returns ``True`` if `obj` is a non-scalar primitive structure,
+  i.e. a list- or dict-type. If `primitives` is truthy, also
+  recursively checks that all sub-items of `obj` are primitives.
+  Otherwise returns ``False``.
+  '''
+  if isdict(obj):
+    if primitives:
+      for key, val in obj.items():
+        if not ( isprimitive(key) and isprimitive(val) ):
+          return False
+    return True
+  if isseq(obj):
+    if primitives:
+      for seg in obj:
+        if not isprimitive(seg):
+          return False
+    return True
+  return False
+
+#------------------------------------------------------------------------------
+def isprimitive(obj, recursive=True):
+  '''
+  Returns ``True`` if `obj` is a primitive scalar (see `isscalar`)
+  or recursive primitive structure (see `isstruct`). Otherwise
+  returns ``False``.
+  '''
+  if isscalar(obj):
+    return True
+  return isstruct(obj, primitives=True)
 
 #------------------------------------------------------------------------------
 def tobool(obj, default=False):
@@ -384,4 +436,5 @@ def xform(value, xformer):
 
 #------------------------------------------------------------------------------
 # end of $Id$
+# $ChangeLog$
 #------------------------------------------------------------------------------
