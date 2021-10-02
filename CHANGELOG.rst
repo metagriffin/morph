@@ -3,6 +3,12 @@ ChangeLog
 =========
 
 
+v0.1.5
+======
+
+* Added `isscalar`, `isstruct`, and `isprimitive` type identification helpers
+
+
 v0.1.4
 ======
 
