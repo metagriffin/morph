@@ -151,6 +151,24 @@ class TestMorph(unittest.TestCase):
       })
 
   #----------------------------------------------------------------------------
+  def test_flatten_separator(self):
+    self.assertEqual(
+      morph.flatten({'a': {'b': 'c'}}, separator='/'),
+      {'a/b': 'c'})
+    self.assertEqual(
+      morph.flatten({'a': {'b': 1, 'c': [2, {'d': 3, 'e': 4}]}}, separator='/'),
+      {'a/b': 1, 'a/c[0]': 2, 'a/c[1]/d': 3, 'a/c[1]/e': 4})
+    self.assertEqual(
+      morph.flatten({'a': {'b': [[1, 2], [3, {'x': 4, 'y': 5}, 6]]}}, separator='/'),
+      {'a/b[0][0]':   1,
+       'a/b[0][1]':   2,
+       'a/b[1][0]':   3,
+       'a/b[1][1]/x': 4,
+       'a/b[1][1]/y': 5,
+       'a/b[1][2]':   6,
+      })
+
+  #----------------------------------------------------------------------------
   def test_unflatten_fail(self):
     with self.assertRaises(ValueError) as cm:
       morph.unflatten({'a.b': 'c', 'a[0]': 'no'})
@@ -172,6 +190,33 @@ class TestMorph(unittest.TestCase):
     self.assertEqual(
       str(cm.exception),
       'invalid list syntax (bad index) in key "a[NADA]"')
+    with self.assertRaises(ValueError) as cm:
+      morph.unflatten({'a': 'b', 'a.b.c': 'c'},separator='+/')
+    self.assertEqual(
+      str(cm.exception),
+      'Separator must be a single character')
+
+  #----------------------------------------------------------------------------
+  def test_unflatten_separator_ok(self):
+    self.assertEqual(
+      morph.unflatten({'a/b' : 'c', 'd' : 'e'}, separator='/'),
+      {'a' : {'b' : 'c'}, 'd' : 'e'})
+    self.assertEqual(
+      morph.unflatten({'a/b': 1, 'a/c[0]': 2, 'a/c[1]': 3, 'a/c[2]': 4}, separator='/'),
+      {'a': {'b': 1, 'c': [2, 3, 4]}})
+    self.assertEqual(
+      morph.unflatten({'a/b': 1, 'a/c[0]': 2, 'a/c[1]/d': 3, 'a/c[1]/e': 4}, separator='/'),
+      {'a': {'b': 1, 'c': [2, {'d': 3, 'e': 4}]}})
+    self.assertEqual(
+      morph.unflatten({
+        'a/b[0][0]':   1,
+        'a/b[0][1]':   2,
+        'a/b[1][0]':   3,
+        'a/b[1][1]/x': 4,
+        'a/b[1][1]/y': 5,
+        'a/b[1][2]':   6,
+        }, separator='/'),
+      {'a': {'b': [[1, 2], [3, {'x': 4, 'y': 5}, 6]]}})
 
   #----------------------------------------------------------------------------
   def test_unflatten_ok(self):
