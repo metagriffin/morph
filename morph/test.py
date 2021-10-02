@@ -295,14 +295,14 @@ class TestMorph(unittest.TestCase):
     self.assertEqual(
       morph.xform(src, double),
       {8: 'fourfour', 'foofoo': 'barbar', 'floatfloat': -4.5})
-    self.assertEqual(sorted(stack), sorted([
+    self.assertEqual(sorted(stack, key=str), sorted([
       (4, dict(item_value='four', dict=src, root=src)),
       ('four', dict(item_key=4, dict=src, root=src)),
       ('foo', dict(item_value='bar', dict=src, root=src)),
       ('bar', dict(item_key='foo', dict=src, root=src)),
       ('float', dict(item_value=-2.25, dict=src, root=src)),
       (-2.25, dict(item_key='float', dict=src, root=src)),
-    ]))
+    ], key=str))
 
   #----------------------------------------------------------------------------
   def test_xform_combined(self):
@@ -314,12 +314,12 @@ class TestMorph(unittest.TestCase):
     self.assertEqual(
       morph.xform(src, double),
       {'keykey': [16, {'k2k2': -4}]})
-    self.assertEqual(stack, [
+    self.assertEqual(sorted(stack, key=str), sorted([
       (8, dict(index=0, seq=[8, {'k2': -2}], root=src)),
       (-2, dict(item_key='k2', dict={'k2': -2}, root=src)),
       ('k2', dict(item_value=-2, dict={'k2': -2}, root=src)),
       ('key', dict(item_value=[8, {'k2': -2}], dict=src, root=src)),
-    ])
+    ], key=str))
 
 
 #------------------------------------------------------------------------------
