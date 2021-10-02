@@ -66,6 +66,41 @@ class TestMorph(unittest.TestCase):
     self.assertFalse(morph.isdict(['a', 'b', 'c']))
 
   #----------------------------------------------------------------------------
+  def test_isscalar(self):
+    self.assertTrue(morph.isscalar(None))
+    self.assertTrue(morph.isscalar(True))
+    self.assertTrue(morph.isscalar(False))
+    self.assertTrue(morph.isscalar(3))
+    self.assertTrue(morph.isscalar(3.14159))
+    self.assertTrue(morph.isscalar(-3.14159))
+    self.assertTrue(morph.isscalar('foo'))
+    self.assertTrue(morph.isscalar(b'foo'))
+    self.assertTrue(morph.isscalar(u'foo'))
+    self.assertFalse(morph.isscalar([ 3 ]))
+    self.assertFalse(morph.isscalar(( 3, )))
+    self.assertFalse(morph.isscalar(self))
+    self.assertFalse(morph.isscalar(unittest.TestCase))
+
+  #----------------------------------------------------------------------------
+  def test_isstruct(self):
+    self.assertTrue(morph.isstruct([ 1, 2, 3 ]))
+    self.assertTrue(morph.isstruct(( 1, 2, 3 )))
+    self.assertTrue(morph.isstruct([ self, unittest.TestCase ]))
+    self.assertTrue(morph.isstruct(dict(one=1)))
+    self.assertTrue(morph.isstruct(dict(class_=self)))
+    self.assertFalse(morph.isstruct(1))
+    self.assertFalse(morph.isstruct([ self, unittest.TestCase ], primitives=True))
+    self.assertFalse(morph.isstruct(dict(class_=self), primitives=True))
+
+  #----------------------------------------------------------------------------
+  def test_isprimitive(self):
+    self.assertTrue(morph.isprimitive(None))
+    self.assertTrue(morph.isprimitive([ True, False ]))
+    self.assertTrue(morph.isprimitive(( 3, 3.14159 )))
+    self.assertTrue(morph.isprimitive(( [ None ], dict(foo=[ b'bar', u'bar' ]) )))
+    self.assertFalse(morph.isprimitive([ self, unittest.TestCase ]))
+
+  #----------------------------------------------------------------------------
   def test_tobool(self):
     self.assertTrue(morph.tobool('true'))
     self.assertTrue(morph.tobool('TRUE'))
